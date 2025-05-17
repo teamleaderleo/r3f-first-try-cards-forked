@@ -1,5 +1,11 @@
 # r3f-first-try-cards-forked
 
+Note 6:
+Just prevent going to max and min heights when pointerDown. Easy...
+But you kinda have to make a separate component and hijack scroll events and add listeners in pretty specific spots.
+![image](https://github.com/user-attachments/assets/3d853381-a0ac-4a95-a03d-3b4b2a740c2c)
+
+
 Note 5:
 We have apparently been at this for a really long time. Trying to maintain scrollbar behaviour with a looping infinite scroll... is not easy.
 ![image](https://github.com/user-attachments/assets/4f7673d0-fed9-45e1-8d4f-96eaf9536324)
