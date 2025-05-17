@@ -40,7 +40,7 @@ function Scene({ children, ...props }) {
 
 function Cards({ category, data, from = 0, len = Math.PI * 2, radius = 5.25, onPointerOver, onPointerOut, ...props }) {
   const [hovered, hover] = useState(null)
-  const amount = Math.round(len * 22)
+  const amount = Math.round(len * 10)
   const textPosition = from + (amount / 2 / amount) * len
   return (
     <group {...props}>
