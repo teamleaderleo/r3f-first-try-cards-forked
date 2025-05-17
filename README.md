@@ -1,5 +1,9 @@
 # r3f-first-try-cards-forked
 
+Note 2:
+
+Moving pages >= 6.001 or 3 allows for bidirectional infinite scroll... but only when you aren't sat at a perfect edge.
+
 Note 1:
 Started the initial commit by changing the cursor to the default. I.e., no overriding the arrow. 
 
