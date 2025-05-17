@@ -12,7 +12,7 @@ const inter = import('@pmndrs/assets/fonts/inter_regular.woff')
 export const App = () => (
   <Canvas dpr={[1, 1.5]}>
     <ScrollControls 
-      pages={6.001} 
+      pages={3} 
       // pages={4} 
       // eps={0.0001}
       infinite
