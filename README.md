@@ -1,5 +1,8 @@
 # r3f-first-try-cards-forked
 
+Note 4: 
+Preventing nudges on drag prevents a double-teleport, but there's still a default teleport; a little flourish. I dislike this.
+
 Note 3:
 Adding a hacky nudge can prevent getting stuck at the edges.
 
