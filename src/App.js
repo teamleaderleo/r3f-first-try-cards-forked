@@ -1,10 +1,12 @@
 import * as THREE from 'three'
-import { useLayoutEffect, useMemo, useRef, useState, useEffect } from 'react'
+import { useLayoutEffect, useMemo, useRef, useState } from 'react'
 import { Canvas, extend, useFrame } from '@react-three/fiber'
 import { Image, ScrollControls, useScroll, Billboard, Text } from '@react-three/drei'
 import { suspend } from 'suspend-react'
 import { generate } from 'random-words'
 import { easing, geometry } from 'maath'
+import { DragPreventer } from './DragPreventer'
+import { EdgeNudger } from './EdgeNudger'
 
 extend(geometry)
 const inter = import('@pmndrs/assets/fonts/inter_regular.woff')
@@ -25,141 +27,6 @@ export const App = () => (
     </ScrollControls>
   </Canvas>
 )
-
-// Prevents teleportation during scrollbar drag
-function DragPreventer() {
-  const scroll = useScroll()
-  
-  useEffect(() => {
-    if (!scroll.el) return
-    
-    const scrollElement = scroll.el
-    let isDraggingScrollbar = false
-    
-    // Only run this on pointer down to detect scrollbar dragging
-    const onPointerDown = (e) => {
-      // Check if click is near the scrollbar area (right side of container)
-      const rect = scrollElement.getBoundingClientRect()
-      const isNearScrollbar = e.clientX > rect.right - 20
-      
-      if (isNearScrollbar) {
-        isDraggingScrollbar = true
-        
-        // Function to handle pointer up anywhere in the document
-        const onPointerUp = () => {
-          isDraggingScrollbar = false
-          document.removeEventListener('pointerup', onPointerUp)
-        }
-        
-        // Add temporary pointer up listener
-        document.addEventListener('pointerup', onPointerUp)
-      }
-    }
-    
-    // Handle scroll events to prevent hitting exact edges during drag
-    const onScroll = () => {
-      if (!isDraggingScrollbar) return
-      
-      const { scrollTop, scrollHeight, clientHeight } = scrollElement
-      const maxScroll = scrollHeight - clientHeight
-      
-      // During scrollbar drag, prevent hitting exactly 0 or maxScroll
-      if (scrollTop === 0) {
-        scrollElement.scrollTop = 1
-      } else if (scrollTop >= maxScroll) {
-        scrollElement.scrollTop = maxScroll - 1
-      }
-    }
-    
-    // Event listeners to prevent click teleportation
-    document.addEventListener('pointerdown', onPointerDown)
-    scrollElement.addEventListener('scroll', onScroll)
-    
-    return () => {
-      document.removeEventListener('pointerdown', onPointerDown)
-      scrollElement.removeEventListener('scroll', onScroll)
-    }
-  }, [scroll])
-  
-  return null
-}
-
-// Hacky component to nudge the scroll position slightly when at the top or bottom
-// so that we don't get caught in the epsilons at the edges
-// This is a workaround for the fact that ScrollControls doesn't scroll at perfect edges
-function EdgeNudger() {
-  const scroll = useScroll()
-  
-  useEffect(() => {
-    if (!scroll.el) return
-    
-    // Add small delay for initialization
-    setTimeout(() => {
-      const scrollElement = scroll.el
-      let isAtEdge = false
-      let isMouseDown = false
-      
-      // Track mouse down/up to prevent nudging during drag
-      const onMouseDown = () => {
-        isMouseDown = true
-      }
-      
-      const onMouseUp = () => {
-        isMouseDown = false
-        // Check edges after mouse up, with a small delay
-        setTimeout(checkEdges, 100)
-      }
-      
-      const checkEdges = () => {
-        if (isAtEdge || isMouseDown) return
-        
-        const { scrollTop, scrollHeight, clientHeight } = scrollElement
-        const maxScroll = scrollHeight - clientHeight
-        
-        // Check if we're exactly at the top or bottom
-        if (scrollTop === 0) {
-          isAtEdge = true
-          // Nudge slightly down (into the epsilon zone)
-          scrollElement.scrollTop = 0.001 * maxScroll
-          setTimeout(() => { isAtEdge = false }, 100)
-        } else if (scrollTop >= maxScroll) {
-          isAtEdge = true
-          // Nudge slightly up (into the epsilon zone)
-          scrollElement.scrollTop = maxScroll - 0.001 * maxScroll
-          setTimeout(() => { isAtEdge = false }, 100)
-        }
-      }
-      
-      // Check edges on scroll events
-      const onScroll = () => {
-        if (!isMouseDown) {
-          checkEdges()
-        }
-      }
-      
-      // Also check periodically but not during mouse drag
-      const interval = setInterval(() => {
-        if (!isMouseDown) {
-          checkEdges()
-        }
-      }, 500)
-      
-      // Add event listeners
-      scrollElement.addEventListener('scroll', onScroll)
-      document.addEventListener('mousedown', onMouseDown)
-      document.addEventListener('mouseup', onMouseUp)
-      
-      return () => {
-        scrollElement.removeEventListener('scroll', onScroll)
-        document.removeEventListener('mousedown', onMouseDown)
-        document.removeEventListener('mouseup', onMouseUp)
-        clearInterval(interval)
-      }
-    }, 500)
-  }, [scroll])
-  
-  return null
-}
 
 function Scene({ children, ...props }) {
   const ref = useRef()
