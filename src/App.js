@@ -11,7 +11,14 @@ const inter = import('@pmndrs/assets/fonts/inter_regular.woff')
 
 export const App = () => (
   <Canvas dpr={[1, 1.5]}>
-    <ScrollControls pages={4} infinite>
+    <ScrollControls 
+      pages={6.001} 
+      // pages={4} 
+      // eps={0.0001}
+      infinite
+      // stop autoformatting and collapsing when in codesandbox
+      // eps={0.00001}
+    >
       <Scene position={[0, 1.5, 0]} />
     </ScrollControls>
   </Canvas>
