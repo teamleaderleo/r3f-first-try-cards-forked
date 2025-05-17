@@ -1,5 +1,8 @@
 # r3f-first-try-cards-forked
 
+Note 3:
+Adding a hacky nudge can prevent getting stuck at the edges.
+
 Note 2:
 
 Moving pages >= 6.001 or 3 allows for bidirectional infinite scroll... but only when you aren't sat at a perfect edge.
