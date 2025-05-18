@@ -7,6 +7,7 @@ import { generate } from 'random-words'
 import { easing, geometry } from 'maath'
 import { DragPreventer } from './DragPreventer'
 import { EdgeNudger } from './EdgeNudger'
+import { WrapFixer } from './WrapFixer'
 
 extend(geometry)
 const inter = import('@pmndrs/assets/fonts/inter_regular.woff')
@@ -22,7 +23,8 @@ export const App = () => (
       // eps={0.00001}
     >
       <DragPreventer />
-      <EdgeNudger />
+      {/* <EdgeNudger /> */}
+      <WrapFixer  />
       <Scene position={[0, 1.5, 0]} />
     </ScrollControls>
   </Canvas>
