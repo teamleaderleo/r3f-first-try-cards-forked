@@ -8,72 +8,42 @@ export function EdgeNudger() {
   const scroll = useScroll();
 
   useEffect(() => {
-    if (!scroll.el) return;
+    const el = scroll.el
+    if (!el) return
 
-    // Add small delay for initialization
-    setTimeout(() => {
-      const scrollElement = scroll.el;
-      let isAtEdge = false;
-      let isMouseDown = false;
+    let isMouseDown = false
 
-      // Track mouse down/up to prevent nudging during drag
-      const onMouseDown = () => {
-        isMouseDown = true;
-      };
+    const checkEdges = () => {
+      const max = el.scrollHeight - el.clientHeight
 
-      const onMouseUp = () => {
-        isMouseDown = false;
-        // Check edges after mouse up, with a small delay
-        setTimeout(checkEdges, 100);
-      };
+      // run AFTER drei’s own scroll handler
+      requestAnimationFrame(() => {
+        if (el.scrollTop <= 0) el.scrollTop = 1           // top edge
+        else if (el.scrollTop >= max) el.scrollTop = max - 1 // bottom edge
+      })
+    }
 
-      const checkEdges = () => {
-        if (isAtEdge || isMouseDown) return;
+    const onScroll = () => !isMouseDown && checkEdges()
 
-        const { scrollTop, scrollHeight, clientHeight } = scrollElement;
-        const maxScroll = scrollHeight - clientHeight;
+    const onMouseDown   = () => (isMouseDown = true)
+    const onMouseUp     = () => { isMouseDown = false; checkEdges() }
+    const onResize      = () => checkEdges()              // keep things sane on resize
 
-        // Check if we're exactly at the top or bottom
-        if (scrollTop === 0) {
-          isAtEdge = true;
-          // Nudge slightly down (into the epsilon zone)
-          scrollElement.scrollTop = 0.001 * maxScroll;
-          setTimeout(() => { isAtEdge = false; }, 100);
-        } else if (scrollTop >= maxScroll) {
-          isAtEdge = true;
-          // Nudge slightly up (into the epsilon zone)
-          scrollElement.scrollTop = maxScroll - 0.001 * maxScroll;
-          setTimeout(() => { isAtEdge = false; }, 100);
-        }
-      };
+    el.addEventListener('scroll', onScroll,  { passive: true })
+    document.addEventListener('mousedown', onMouseDown)
+    document.addEventListener('mouseup',   onMouseUp)
+    window.addEventListener('resize',      onResize)
 
-      // Check edges on scroll events
-      const onScroll = () => {
-        if (!isMouseDown) {
-          checkEdges();
-        }
-      };
+    // make sure we start off-edge
+    checkEdges()
 
-      // Also check periodically but not during mouse drag
-      const interval = setInterval(() => {
-        if (!isMouseDown) {
-          checkEdges();
-        }
-      }, 500);
+    return () => {
+      el.removeEventListener('scroll', onScroll)
+      document.removeEventListener('mousedown', onMouseDown)
+      document.removeEventListener('mouseup',   onMouseUp)
+      window.removeEventListener('resize',      onResize)
+    }
+  }, [scroll])   // will run again after every drei resize effect
 
-      // Add event listeners
-      scrollElement.addEventListener('scroll', onScroll);
-      document.addEventListener('mousedown', onMouseDown);
-      document.addEventListener('mouseup', onMouseUp);
-
-      return () => {
-        scrollElement.removeEventListener('scroll', onScroll);
-        document.removeEventListener('mousedown', onMouseDown);
-        document.removeEventListener('mouseup', onMouseUp);
-        clearInterval(interval);
-      };
-    }, 500);
-  }, [scroll]);
-
-  return null;
+  return null
 }
