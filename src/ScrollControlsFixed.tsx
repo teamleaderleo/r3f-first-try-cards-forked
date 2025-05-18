@@ -159,7 +159,7 @@ export function ScrollControls({
 
   React.useEffect(() => {
     if (events.connected === el) {
-      const containerLength = size[horizontal ? 'width' : 'height']
+      const containerLength = el[horizontal ? 'clientWidth' : 'clientHeight']
       const scrollLength = el[horizontal ? 'scrollWidth' : 'scrollHeight']
       const scrollThreshold = scrollLength - containerLength
 
