@@ -10,7 +10,6 @@
     "@react-three/drei": "10.0.7",
     "@react-three/fiber": "9.1.2",
     "@react-three/postprocessing": "3.0.4",
-    "@types/three": "0.176.0",
     "gray-matter": "^4.0.3",
     "maath": "^0.10.8",
     "random-words": "2.0.1",
@@ -32,5 +31,9 @@
     "not dead",
     "not ie <= 11",
     "not op_mini all"
-  ]
+  ],
+  "devDependencies": {
+    "@types/react": "^19.1.4",
+    "@types/three": "0.176.0"
+  }
 }
